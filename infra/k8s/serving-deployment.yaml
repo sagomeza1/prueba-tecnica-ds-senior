@@ -1,0 +1,53 @@
+# Deployment de serving online (fraude) con autoscaling horizontal
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-serving
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fraud-serving
+  template:
+    metadata:
+      labels:
+        app: fraud-serving
+    spec:
+      containers:
+        - name: serving
+          image: registry.internal/fraud-serving:1.4.2
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ENV
+              value: prod
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /v1/models
+              port: 8000
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: fraud-serving-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: fraud-serving
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

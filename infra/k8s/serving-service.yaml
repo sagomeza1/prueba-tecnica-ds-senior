@@ -1,0 +1,12 @@
+# Servicio interno del serving
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-serving
+spec:
+  selector:
+    app: fraud-serving
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP

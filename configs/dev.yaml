@@ -1,0 +1,22 @@
+# Configuración entorno de desarrollo
+environment: dev
+mlflow:
+  tracking_uri: http://localhost:5000
+  registry_uri: http://localhost:5000
+feature_store:
+  repo_path: ./features_repo
+  online_store: redis://localhost:6379
+serving:
+  host: 0.0.0.0
+  port: 8000
+  timeout_ms: 500
+models:
+  riesgo-financiero:
+    version: 2.1.0
+    threshold: 0.40
+  fraude-anomalias:
+    version: 1.4.2
+    threshold: 0.70
+monitoring:
+  drift_psi_threshold: 0.20
+  latency_p95_ms: 100
